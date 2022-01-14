@@ -17,7 +17,7 @@ class WeatherController extends Controller
      * Get the weather for the city in the url, If no city default to London
      * E.g /api/weather?city=Exeter
      * @param  \Illuminate\Http\Request  $request
-     * @return string
+     * @return \Illuminate\Http\JsonResponse
      */
     public function  show(Request $request)
     {       

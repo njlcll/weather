@@ -50,38 +50,33 @@ class JWTController extends Controller
     }
 
     /**
-     * login user
+     * login user with username and password
      *
      * @return \Illuminate\Http\JsonResponse
      */
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
+            'name' => 'required|string|min:2',
             'password' => 'required|string|min:6',
         ]);
 
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
 
-        $user = User::where('name', 'j@j.com')
-            ->orWhere('name', 'user1')
-            ->first();
-
-            $token = null;
-            if (!$token = Auth::fromUser($user)) {
-               return $this->respondInternalError( 'Can\'t generate the JWT token right now, try again later!', 'object', 400);
-            }
-           // echo($token);
-            return $this->respondWithToken($token);
-
-        // if ($validator->fails()) {
-        //     return response()->json($validator->errors(), 422);
-        // }
-
-        // if (!$token = auth()->attempt($validator->validated())) {
-        //     return response()->json(['error' => 'Unauthorized'], 401);
-        // }
-
-        // return $this->respondWithToken($token);
+     
+        $user = User::where('name', $request['name'])->first();
+        if(!$user){
+            return response()->json(['error' => 'Unauthorized'], 400);
+        }
+        $token = Auth::fromUser($user);
+      
+        if (!$token) {
+            return response()->json(['error' => 'Unauthorized error with token'], 400);
+        }
+      
+        return $this->respondWithToken($token);      
     }
 
     /**
