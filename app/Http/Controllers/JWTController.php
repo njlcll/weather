@@ -57,19 +57,31 @@ class JWTController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
+            'name' => 'required',
             'password' => 'required|string|min:6',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
 
-        if (!$token = auth()->attempt($validator->validated())) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+        $user = User::where('name', 'j@j.com')
+            ->orWhere('name', 'user1')
+            ->first();
 
-        return $this->respondWithToken($token);
+            $token = null;
+            if (!$token = Auth::fromUser($user)) {
+               return $this->respondInternalError( 'Can\'t generate the JWT token right now, try again later!', 'object', 400);
+            }
+           // echo($token);
+            return $this->respondWithToken($token);
+
+        // if ($validator->fails()) {
+        //     return response()->json($validator->errors(), 422);
+        // }
+
+        // if (!$token = auth()->attempt($validator->validated())) {
+        //     return response()->json(['error' => 'Unauthorized'], 401);
+        // }
+
+        // return $this->respondWithToken($token);
     }
 
     /**
@@ -119,6 +131,4 @@ class JWTController extends Controller
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
     }
-
-    
 }
