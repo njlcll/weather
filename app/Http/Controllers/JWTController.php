@@ -28,7 +28,7 @@ class JWTController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|min:2|max:100',
+            'name' => 'required|string|min:2|max:100|unique:users',
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|confirmed|min:6',
         ]);
@@ -37,11 +37,13 @@ class JWTController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password)
-        ]);
+        $user = new User();
+        $user->name = $request->name;
+        $user->password = Hash::make($request->password);
+        $user->email =  $request->email;
+        $user->save();
+
+
 
         return response()->json([
             'message' => 'User successfully registered',
@@ -65,18 +67,18 @@ class JWTController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-     
+
         $user = User::where('name', $request['name'])->first();
-        if(!$user){
+        if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 400);
         }
         $token = Auth::fromUser($user);
-      
+
         if (!$token) {
             return response()->json(['error' => 'Unauthorized error with token'], 400);
         }
-      
-        return $this->respondWithToken($token);      
+
+        return $this->respondWithToken($token);
     }
 
     /**
