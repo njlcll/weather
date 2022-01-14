@@ -120,7 +120,5 @@ class JWTController extends Controller
         ]);
     }
 
-    public function test(){
-        echo "here";
-    }
+    
 }
