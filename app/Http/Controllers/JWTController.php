@@ -12,7 +12,7 @@ class JWTController extends Controller
 {
     /**
      * Create a new AuthController instance.
-     *
+     * Gaurd some routes with auth:api middleware
      * @return void
      */
     public function __construct()
