@@ -30,6 +30,8 @@ class WeatherController extends Controller
 
         $url = "https://api.openweathermap.org/data/2.5/weather?q=$city&appid=$api";
 
+       // $response = Http::get('https://api.openweathermap.org/data/2.5/weather?q=$city&appid=$api');
+    //    return response();
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
 
